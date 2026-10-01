@@ -255,14 +255,8 @@ class ModelSelection:
 
         encoder = self.load_encoder(run_id)
 
-        X_test_final = self.encode_test_data(
-            X_test,
-            encoder
-        )
-
-        predictions = model.predict(
-            X_test_final
-        )
+        X_test_final = self.encode_test_data(X_test,encoder)
+        predictions = model.predict(X_test_final)
 
         test_r2 = r2_score(
             y_test,

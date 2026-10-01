@@ -2,9 +2,7 @@ import logging
 import pickle
 import mlflow
 import pandas as pd
-
 from mlflow import MlflowClient
-
 from databricks.feature_engineering import (
     FeatureEngineeringClient,
     FeatureLookup
@@ -76,9 +74,7 @@ class ChampionChallenger:
         category_columns = (self.config["ml"]["encoding"]["categorical_columns"])
         numeric_columns = (self.config["ml"]["encoding"]["numeric_columns"])
 
-        encoded_data = encoder.transform(
-            X_test[category_columns]
-        )
+        encoded_data = encoder.transform(X_test[category_columns])
 
         encoded_columns = (
             encoder.get_feature_names_out(

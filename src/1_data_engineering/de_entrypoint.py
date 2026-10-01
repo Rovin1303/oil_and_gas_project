@@ -69,9 +69,7 @@ def gold_feature(config):
         gold_table=gold_table,
         gold_feature=gold_feature_table
     )
-
     features.run()
-
 
 def feature_store(config):
     gold_feature_table = config["tables"]["gold_feature"]

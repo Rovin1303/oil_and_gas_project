@@ -1,0 +1,43 @@
+bundle:
+  name: oag_ml_project
+
+resources:
+  jobs:
+    oag_job:
+      name: oag_job
+      tasks:
+        - task_key: 1_data_engineering
+          spark_python_task:
+            python_file: ./src/1_data_engineering/de_entrypoint.py
+          environment_key: 1_data_engineering_environment
+        - task_key: 2_model_training
+          depends_on:
+            - task_key: 1_data_engineering
+          spark_python_task:
+            python_file: ./src/2_model_training/model_train_entrypoint.py
+          environment_key: 1_data_engineering_environment
+        - task_key: 3_predictions
+          depends_on:
+            - task_key: 2_model_training
+          spark_python_task:
+            python_file: ./src/3_inference/inference_entrypoint.py
+          environment_key: 1_data_engineering_environment
+      queue:
+        enabled: true
+      environments:
+        - environment_key: 1_data_engineering_environment
+          spec:
+            dependencies:
+              - -r
+                ./src/requirements.txt
+            environment_version: "6"
+        - environment_key: Default
+          spec:
+            environment_version: "6"
+      performance_target: PERFORMANCE_OPTIMIZED
+
+targets:
+
+  dev:
+    mode: development
+    default: true
