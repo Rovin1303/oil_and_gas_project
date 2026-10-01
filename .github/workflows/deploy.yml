@@ -36,4 +36,4 @@ jobs:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_ACCESS_TOKEN }}
         run: |
-          databricks bundle run -t dev
+          databricks bundle run -t dev oag_job
