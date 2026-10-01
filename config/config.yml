@@ -1,0 +1,65 @@
+paths:
+  data_path: "/Volumes/oag/bronze/raw/supply_chain_dataset.csv"
+
+catalog:
+  name: "oag"
+
+tables:
+  bronze: "oag.bronze.bronze_table"
+  silver: "oag.silver.silver_table"
+  gold: "oag.gold.gold_table"
+  gold_feature: "oag.gold.gold_features"
+  input_feature: "oag.gold.demand_input_features"
+  output_feature: "oag.gold.demand_output"
+  prediction: "oag.predictions.prediction_table"
+
+ml:
+  experiment_name: "/Users/rovindcosta133@gmail.com/Demand_Prediction"
+
+  model_name:
+    registered_name: "oag.ml.demand_prediction_model"
+
+  model:
+    criterion: "squared_error"
+    max_depth: 15
+    min_samples_split: 30
+    min_samples_leaf: 15
+    random_state: 42
+
+  target:
+    column: "total_demand"
+
+  encoding:
+    categorical_columns:
+      - "product_name"
+      - "destination_city"
+
+    numeric_columns:
+      - "avg_unit_price"
+      - "total_inventory"
+      - "transaction_count"
+      - "demand_1"
+      - "demand_7"
+      - "rolling_7_day_avg"
+      - "month"
+      - "day_of_week"
+
+  artifacts:
+    directory: "models"
+    encoder: "onehot_encoder.pkl"
+    artifact_path: "preprocessing/onehot_encoder.pkl"
+
+  mlflow:
+    run_name: "DecisionTree_Training"
+    model_artifact_name: "decision_tree_model"
+    selection_metric: "validation_r2"
+
+  validation:
+    test_r2_threshold: 0.90
+  
+  registry:
+    uri: "databricks-uc"
+    challenger_alias: "Challenger"
+    champion_alias: "Champion"
+
+

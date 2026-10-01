@@ -1,0 +1,84 @@
+import logging
+import pyspark.sql.functions as F
+from pyspark.sql.window import Window
+
+class GoldTransformation:
+
+    def __init__(self, spark, catalog_name,silver_table,gold_table):
+        self.spark = spark
+        self.catalog_name = catalog_name
+        self.silver_table = silver_table
+        self.gold_table = gold_table
+
+        self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger.setLevel(logging.INFO)
+        if not self.logger.handlers:
+            handler = logging.StreamHandler()
+            formatter = logging.Formatter(
+                "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+            )
+            handler.setFormatter(formatter)
+            self.logger.addHandler(handler)
+
+    def read_silver(self):
+        self.logger.info(
+            f"Reading Silver table: {self.silver_table}"
+        )
+        try:
+            silver_df = self.spark.table(self.silver_table)
+            self.logger.info(
+                "Silver table read successfully"
+            )
+            return silver_df
+        except Exception as e:
+            self.logger.error(
+                f"Failed to read Silver table: {str(e)}"
+            )
+            raise
+
+    def gold_table_df(self, silver_df):
+        self.logger.info(
+            "Starting Gold table aggregation")
+        try:
+            df = (silver_df.groupBy(
+                    "transaction_date",
+                    "product_name",
+                    "destination_city")
+                .agg(
+                    F.round(F.sum("demand_quantity"), 2).alias("total_demand"),
+                    F.round(F.avg("unit_price_usd"), 2).alias("avg_unit_price"),
+                    F.round(F.sum("available_inventory"), 2).alias("total_inventory"),
+                    F.count("*").alias("transaction_count")
+                ))
+            self.logger.info("Gold table aggregation completed successfully")
+            return df
+        except Exception as e:
+            raise self.logger.error(f"Gold aggregation failed: {str(e)}")
+    
+    def create_gold_table(self, df):
+        self.logger.info(f"Writing Gold table: {self.gold_table}")
+        try:
+            (
+            df.write
+            .format("delta")
+            .mode("overwrite")
+            .saveAsTable(self.gold_table)
+        )
+            self.logger.info(
+                f"Gold table created successfully: {self.gold_table}"
+            )
+            return True
+        except Exception as e:
+            self.logger.error(f"Failed to create Gold table: {str(e)}")
+            raise 
+    
+    def run(self):
+        self.logger.info("========== Gold transformation started ==========")
+        try:
+            silver_df = self.read_silver()
+            gold_df = self.gold_table_df(silver_df)
+            self.create_gold_table(gold_df)
+            self.logger.info("========== Gold transformation completed successfully ==========")
+            return True
+        except Exception as e:
+            raise self.logger.error(f"Gold transformation failed: {str(e)}")
