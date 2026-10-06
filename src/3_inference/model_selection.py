@@ -67,7 +67,7 @@ class ModelSelection:
 
         if experiment is None:
             raise ValueError(
-                f"Experiment not found: {self.config["ml"]["experiment_name"]}"
+                f"Experiment not found: {self.config['ml']['experiment_name']}"
             )
         selection_metric = self.config["ml"]["mlflow"]["selection_metric"]
         run_name = self.config["ml"]["mlflow"]["run_name"]

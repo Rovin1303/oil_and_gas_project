@@ -29,7 +29,7 @@ class SilverTransformation:
     def read_bronze(self):
         '''Read the bronze table from Unity Catalog and return it as a DataFrame.'''
         self.logger.info(
-            f"Reading Bronze table: {self.bronze_table}"
+            "Reading Bronze table: %s", self.bronze_table
         )
         try:
             bronze_df = self.spark.table(self.bronze_table)
@@ -39,7 +39,7 @@ class SilverTransformation:
             return bronze_df
         except Exception as e:
             self.logger.error(
-                f"Failed to read Bronze table: {str(e)}")
+                "Failed to read Bronze table: %s", str(e))
             raise
             
     def drop_columns(self, df):
@@ -47,11 +47,11 @@ class SilverTransformation:
         self.logger.info("Starting column removal")
         try:
             silver_df = df.drop("ingestion_timestamp", "source_system", "operation_type")
-            self.logger.info(f"Dropped columns")
+            self.logger.info("Dropped columns")
             return silver_df
         
         except Exception as e:
-            self.logger.error(f"Failed to drop columns: {str(e)}")
+            self.logger.error("Failed to drop columns: %s", str(e))
             raise
 
     def drop_duplicates(self, df):
@@ -63,12 +63,12 @@ class SilverTransformation:
             return silver_df
 
         except Exception as e:
-            self.logger.error(f"Failed to remove duplicates: {str(e)}")
+            self.logger.error("Failed to remove duplicates: %s", str(e))
             raise
 
     def create_silver_table(self, df):
         '''Write the transformed DataFrame as a silver Delta table to Unity Catalog.'''
-        self.logger.info(f"Writing Silver table: {self.silver_table}")
+        self.logger.info("Writing Silver table: %s", self.silver_table)
         try:
             (
                 df.write
@@ -77,11 +77,11 @@ class SilverTransformation:
                 .saveAsTable(self.silver_table)
             )
             self.logger.info(
-                f"Silver table created successfully: {self.silver_table}"
+                "Silver table created successfully: %s", self.silver_table
             )
             return True
         except Exception as e:
-            self.logger.error(f"Failed to create Silver table: {str(e)}")
+            self.logger.error("Failed to create Silver table: %s", str(e))
             raise
 
     def run(self):
@@ -97,5 +97,5 @@ class SilverTransformation:
             return True
 
         except Exception as e:
-            self.logger.error(f"Silver transformation failed: {str(e)}")
+            self.logger.error("Silver transformation failed: %s", str(e))
             raise
