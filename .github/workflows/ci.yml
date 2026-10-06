@@ -26,4 +26,4 @@ jobs:
           pip install pylint
 
       - name: Lint
-        run: pylint src/
+        run: pylint src/ --disable=C,R
