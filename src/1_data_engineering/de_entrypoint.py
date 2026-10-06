@@ -9,11 +9,21 @@ from feature_store import FeatureStore
 
 
 def load_config(config_path):
+    """Load a YAML configuration file and return it as a dictionary.
+
+    Args:
+        config_path: Path to the YAML config file.
+    """
     with open(config_path, "r") as file:
         return yaml.safe_load(file)
 
 
 def bronze(config):
+    """Run the bronze ingestion pipeline using the provided configuration.
+
+    Args:
+        config: Dictionary containing paths, catalog, and table names.
+    """
     data_path = config["paths"]["data_path"]
     catalog_name = config["catalog"]["name"]
     bronze_table = config["tables"]["bronze"]
@@ -29,6 +39,11 @@ def bronze(config):
 
 
 def silver(config):
+    """Run the silver transformation pipeline using the provided configuration.
+
+    Args:
+        config: Dictionary containing catalog and table names.
+    """
     catalog_name = config["catalog"]["name"]
     bronze_table = config["tables"]["bronze"]
     silver_table = config["tables"]["silver"]
@@ -44,6 +59,11 @@ def silver(config):
 
 
 def gold(config):
+    """Run the gold transformation pipeline using the provided configuration.
+
+    Args:
+        config: Dictionary containing catalog and table names.
+    """
     catalog_name = config["catalog"]["name"]
     silver_table = config["tables"]["silver"]
     gold_table = config["tables"]["gold"]
@@ -59,6 +79,11 @@ def gold(config):
 
 
 def gold_feature(config):
+    """Run the gold feature engineering pipeline using the provided configuration.
+
+    Args:
+        config: Dictionary containing catalog and table names.
+    """
     catalog_name = config["catalog"]["name"]
     gold_table = config["tables"]["gold"]
     gold_feature_table = config["tables"]["gold_feature"]
@@ -72,6 +97,11 @@ def gold_feature(config):
     features.run()
 
 def feature_store(config):
+    """Create feature and label tables in the Databricks Feature Store.
+
+    Args:
+        config: Dictionary containing feature and label table names.
+    """
     gold_feature_table = config["tables"]["gold_feature"]
     input_features = config["tables"]["input_feature"]
     output_features = config["tables"]["output_feature"]
@@ -90,7 +120,7 @@ def feature_store(config):
 
 
 def main():
-
+    """Execute the full data engineering pipeline: bronze, silver, gold, features, and feature store."""
     config_path = "../../config/config.yml"
 
     config = load_config(config_path)
