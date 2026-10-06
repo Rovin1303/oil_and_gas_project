@@ -5,6 +5,14 @@ from pyspark.sql.window import Window
 class GoldTransformation:
 
     def __init__(self, spark, catalog_name,silver_table,gold_table):
+        """Initialize the GoldTransformation instance.
+
+        Args:
+            spark: SparkSession object
+            catalog_name: Unity Catalog name
+            silver_table: Name of the source silver table
+            gold_table: Name of the target gold table
+        """
         self.spark = spark
         self.catalog_name = catalog_name
         self.silver_table = silver_table
@@ -21,6 +29,7 @@ class GoldTransformation:
             self.logger.addHandler(handler)
 
     def read_silver(self):
+        """Read the silver table from Unity Catalog and return it as a DataFrame."""
         self.logger.info(
             f"Reading Silver table: {self.silver_table}"
         )
@@ -37,6 +46,7 @@ class GoldTransformation:
             raise
 
     def gold_table_df(self, silver_df):
+        """Aggregate silver data by date, product, and city into gold-level metrics."""
         self.logger.info(
             "Starting Gold table aggregation")
         try:
@@ -56,6 +66,7 @@ class GoldTransformation:
             raise self.logger.error(f"Gold aggregation failed: {str(e)}")
     
     def create_gold_table(self, df):
+        """Write the aggregated gold DataFrame as a Delta table to Unity Catalog."""
         self.logger.info(f"Writing Gold table: {self.gold_table}")
         try:
             (
@@ -73,6 +84,7 @@ class GoldTransformation:
             raise 
     
     def run(self):
+        """Execute the full gold transformation pipeline."""
         self.logger.info("========== Gold transformation started ==========")
         try:
             silver_df = self.read_silver()

@@ -5,7 +5,7 @@ from model_predictions import ChampionChallenger
 
 
 def main():
-
+    """Execute the full inference pipeline: model selection and champion-challenger evaluation."""
     with open("../../config/config.yml", "r") as file:
         config = yaml.safe_load(file)
 

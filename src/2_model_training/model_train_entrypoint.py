@@ -4,7 +4,7 @@ from model_training import MLModelTraining
 
 
 def main():
-
+    """Execute the full ML model training pipeline using configuration from config.yml."""
     with open("../../config/config.yml", "r") as file:
         config = yaml.safe_load(file)
 

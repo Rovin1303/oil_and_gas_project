@@ -1,0 +1,21 @@
+name: Validate Databricks Bundle
+
+on:
+  pull requests:
+    branches:
+      - dev
+      - main
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # 1. Get the repository code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 4. Linting
+      - name: Lint
+        run: pylint src/
