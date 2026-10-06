@@ -3,7 +3,7 @@ name: Deploy Databricks Bundle
 on:
   push:
     branches:
-      - main
+      - dev
 
 jobs:
   deploy:
