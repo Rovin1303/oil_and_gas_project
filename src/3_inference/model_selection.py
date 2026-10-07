@@ -1,18 +1,14 @@
+#!/usr/bin/env python
 import logging
-from databricks.feature_engineering import FeatureEngineeringClient,FeatureLookup
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import OneHotEncoder
-import os
 import pickle
-import pandas as pd
+
 import mlflow
 import mlflow.sklearn
-from mlflow import MlflowClient
-from sklearn.tree import DecisionTreeRegressor
-from sklearn.metrics import mean_absolute_error,mean_squared_error,r2_score
-from mlflow.models import infer_signature
+import pandas as pd
+from databricks.feature_engineering import FeatureLookup
 from mlflow.tracking import MlflowClient
 from sklearn.metrics import r2_score
+from sklearn.model_selection import train_test_split
 
 logger = logging.getLogger("ModelSelection")
 logger.setLevel(logging.INFO)

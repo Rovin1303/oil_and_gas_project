@@ -1,7 +1,16 @@
+#!/usr/bin/env python
 import logging
-import pyspark
+
 import pyspark.sql.functions as F
-from pyspark.sql.types import StructType, StructField, StringType, IntegerType,DoubleType,DateType
+from pyspark.sql.types import (
+    DateType,
+    DoubleType,
+    IntegerType,
+    StringType,
+    StructField,
+    StructType,
+)
+
 
 class BronzeIngestion:
 
@@ -94,10 +103,10 @@ class BronzeIngestion:
             return bronze_df
 
         except Exception as e:
-
-            raise self.logger.error(
+            self.logger.error(
                 "Failed to create DataFrame: %s", str(e)
             )
+            raise
     
     def create_table(self):
         '''Create the bronze Delta table by reading the source file and writing to Unity Catalog.'''
@@ -116,9 +125,10 @@ class BronzeIngestion:
             self.logger.info("Bronze table created successfully: %s", self.table_name)
             return True
         except Exception as e:
-            raise self.logger.error(
+            self.logger.error(
                 "Bronze table creation failed: %s", str(e)
             )
+            raise
     
     def run(self):
         '''Execute the full bronze ingestion pipeline.'''
@@ -128,5 +138,6 @@ class BronzeIngestion:
             if result:
                 self.logger.info("========== Bronze ingestion completed successfully ===========")
                 return result
-        except Exception as e:
-                raise self.logger.error("========== Bronze ingestion failed ==========")
+        except Exception:
+                self.logger.error("========== Bronze ingestion failed ==========")
+                raise

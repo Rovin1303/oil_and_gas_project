@@ -1,15 +1,17 @@
+#!/usr/bin/env python
 import logging
-from databricks.feature_engineering import FeatureEngineeringClient,FeatureLookup
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import OneHotEncoder
 import os
 import pickle
-import pandas as pd
+
 import mlflow
 import mlflow.sklearn
-from sklearn.tree import DecisionTreeRegressor
-from sklearn.metrics import mean_absolute_error,mean_squared_error,r2_score
+import pandas as pd
+from databricks.feature_engineering import FeatureLookup
 from mlflow.models import infer_signature
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.tree import DecisionTreeRegressor
 
 logger = logging.getLogger("MLTraining")
 logger.setLevel(logging.INFO)
@@ -222,10 +224,10 @@ class MLModelTraining:
         df = self.create_training_dataset()
         df = self.sort_data(df)
         train_df, validate_df, test_df = self.split_data(df)
-        X_train,y_train,X_validate,y_validate,X_test,y_test = self.split_input_output(train_df,validate_df,test_df)
-        X_train_final, encoder = self.encode_categorical_data(X_train)
+        X_train,y_train,X_validate,y_validate,_X_test,_y_test = self.split_input_output(train_df,validate_df,test_df)
+        X_train_final, _encoder = self.encode_categorical_data(X_train)
         X_validate_final = self.encode_validation_data(X_validate)
-        model= self.train_model(X_train_final,y_train,X_validate_final,y_validate)
+        self.train_model(X_train_final,y_train,X_validate_final,y_validate)
         logger.info("ML pipeline completed")
     
 

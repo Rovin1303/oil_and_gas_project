@@ -21,12 +21,10 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install pylint
-          pip install mypy
           pip install -r src/requirements.txt
 
       - name: Lint
-        run: pylint src/
+        run: ruff check src/
 
       - name: Type Check
         run: mypy src/
