@@ -3,7 +3,6 @@ name: CI
 on:
   pull_request:
     branches:
-      - dev
       - main
 
 jobs:
@@ -23,7 +22,11 @@ jobs:
       - name: Install dependencies
         run: |
           pip install pylint
+          pip install mypy
           pip install -r src/requirements.txt
 
       - name: Lint
         run: pylint src/ --errors-only --disable=E0401,E0602
+
+      - name: Type Check
+        run: mypy src/
