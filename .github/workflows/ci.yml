@@ -26,7 +26,7 @@ jobs:
           pip install -r src/requirements.txt
 
       - name: Lint
-        run: pylint src/ --errors-only --disable=E0401,E0602
+        run: pylint src/
 
       - name: Type Check
         run: mypy src/
