@@ -1,14 +1,12 @@
 import logging
 import pickle
+
 import mlflow
 import pandas as pd
+from databricks.feature_engineering import FeatureLookup
 from mlflow import MlflowClient
-from databricks.feature_engineering import (
-    FeatureEngineeringClient,
-    FeatureLookup
-)
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score
+from sklearn.model_selection import train_test_split
 
 logger = logging.getLogger("DemandPrediction")
 logger.setLevel(logging.INFO)
@@ -62,7 +60,7 @@ class ChampionChallenger:
         df = df.drop("transaction_date")
         df = df.toPandas()
         train_validate_df,test_df = train_test_split(df,test_size=0.20,shuffle=False)
-        train_df,validate_df = train_test_split(train_validate_df,test_size=0.20,shuffle=False)
+        _train_df,_validate_df = train_test_split(train_validate_df,test_size=0.20,shuffle=False)
         X_test = test_df.drop(columns=[target_column])
         y_test = test_df[target_column]
         return X_test,y_test
@@ -203,7 +201,7 @@ class ChampionChallenger:
             )
 
             metric_r2_passed = (challenger_r2 > champion_r2)
-        except Exception:
+        except Exception:  # noqa: BLE001
 
             logger.info(
                 "No Champion found. "

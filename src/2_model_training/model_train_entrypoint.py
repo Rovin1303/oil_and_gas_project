@@ -1,5 +1,6 @@
 import yaml
 from databricks.feature_engineering import FeatureEngineeringClient
+from databricks.sdk.runtime import spark
 from model_training import MLModelTraining
 
 

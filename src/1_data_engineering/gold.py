@@ -1,6 +1,7 @@
 import logging
+
 import pyspark.sql.functions as F
-from pyspark.sql.window import Window
+
 
 class GoldTransformation:
 
@@ -63,7 +64,8 @@ class GoldTransformation:
             self.logger.info("Gold table aggregation completed successfully")
             return df
         except Exception as e:
-            raise self.logger.error("Gold aggregation failed: %s", str(e))
+            self.logger.error("Gold aggregation failed: %s", str(e))
+            raise
     
     def create_gold_table(self, df):
         """Write the aggregated gold DataFrame as a Delta table to Unity Catalog."""
@@ -93,4 +95,5 @@ class GoldTransformation:
             self.logger.info("========== Gold transformation completed successfully ==========")
             return True
         except Exception as e:
-            raise self.logger.error("Gold transformation failed: %s", str(e))
+            self.logger.error("Gold transformation failed: %s", str(e))
+            raise

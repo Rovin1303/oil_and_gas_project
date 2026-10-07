@@ -1,7 +1,6 @@
 import logging
 
 from pyspark.sql import functions as F
-from databricks.feature_engineering import FeatureEngineeringClient
 
 logger = logging.getLogger("FeatureStore")
 logger.setLevel(logging.INFO)

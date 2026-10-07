@@ -1,6 +1,8 @@
 import logging
+
 import pyspark.sql.functions as F
 from pyspark.sql.window import Window
+
 
 class Features:
 

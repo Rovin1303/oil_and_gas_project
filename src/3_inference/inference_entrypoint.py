@@ -1,7 +1,8 @@
 import yaml
 from databricks.feature_engineering import FeatureEngineeringClient
-from model_selection import ModelSelection
+from databricks.sdk.runtime import spark
 from model_predictions import ChampionChallenger
+from model_selection import ModelSelection
 
 
 def main():
