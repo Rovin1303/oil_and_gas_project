@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import logging
 
 from pyspark.sql import functions as F

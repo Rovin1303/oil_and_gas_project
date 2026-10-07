@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import yaml
 from bronze import BronzeIngestion
 from databricks.feature_engineering import FeatureEngineeringClient
