@@ -4,3 +4,5 @@ mlflow
 databricks-feature-engineering
 ruff
 mypy
+pytest
+pyspark
