@@ -1,6 +1,5 @@
 from src.data_engineering.silver import SilverTransformation
 
-
 def test_drop_duplicates(spark):
     """Test that drop_duplicates removes rows with duplicate transaction_id."""
     data = [

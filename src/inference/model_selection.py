@@ -1,5 +1,6 @@
 import logging
 import pickle
+from typing import cast
 
 import mlflow
 import mlflow.sklearn
@@ -41,7 +42,7 @@ class ModelSelection:
         self.output_table = output_table
         self.config = config
 
-        self.model_version = None
+        self.model_version: str | None = None
         self.run_id = None
 
         logger.info("Model Selection initialized")
@@ -66,14 +67,17 @@ class ModelSelection:
             )
         selection_metric = self.config["ml"]["mlflow"]["selection_metric"]
         run_name = self.config["ml"]["mlflow"]["run_name"]
-        runs = mlflow.search_runs(
-            experiment_ids=[experiment.experiment_id],
-            filter_string=(
-                "status = 'FINISHED' "
-                f"and run_name = '{run_name}'"
-            ),
-            order_by=[f"metrics.{selection_metric} DESC"],
-            max_results=1
+        runs = cast(
+            pd.DataFrame,
+            mlflow.search_runs(
+                experiment_ids=[experiment.experiment_id],
+                filter_string=(
+                    "status = 'FINISHED' "
+                    f"and run_name = '{run_name}'"
+                ),
+                order_by=[f"metrics.{selection_metric} DESC"],
+                max_results=1
+            )
         )
 
         if runs.empty:
@@ -378,6 +382,11 @@ class ModelSelection:
         Args:
             test_r2: R2 score to tag on the model version.
         """
+        if self.model_version is None:
+            raise ValueError(
+                "Model version is not set. Call register_model first."
+            )
+
         client = MlflowClient()
         challenger_alias = self.config["ml"]["registry"]["challenger_alias"]
         model_name = self.config["ml"]["model_name"]["registered_name"]
