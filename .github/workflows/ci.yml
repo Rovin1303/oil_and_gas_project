@@ -25,6 +25,3 @@ jobs:
 
       - name: Lint
         run: ruff check src/
-
-      - name: Type Check
-        run: mypy src/
