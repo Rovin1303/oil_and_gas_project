@@ -21,10 +21,13 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -r src/requirements.txt
+          pip install -r src/requirements_dev.txt
 
       - name: Lint
         run: ruff check src/
+
+      - name: Type Checks 
+        run: mypy src/
 
       - name: Run unit tests
         run: python -m pytest tests/ -v
