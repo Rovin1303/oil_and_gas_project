@@ -7,7 +7,7 @@ resources:
         timezone_id: "Asia/Kolkata"
         pause_status: UNPAUSED
 
-        tags:
+      tags:
         project: "oil gas suppy chain"
         environment: "development"
         team: "ml"
@@ -15,9 +15,9 @@ resources:
 
       email_notifications:
         on_start:
-          -rovindcosta133@gmail.com
+          - rovindcosta133@gmail.com
         on_success:
-          -rovindcosta133@gmail.com
+          - rovindcosta133@gmail.com
         on_failure:
           - rovindcosta133@gmail.com
       tasks:
