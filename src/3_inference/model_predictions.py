@@ -16,6 +16,16 @@ logger.setLevel(logging.INFO)
 class ChampionChallenger:
 
     def __init__(self,spark,feature_client,feature_table,output_table,prediction_table,config):
+        """Initialize the ChampionChallenger instance.
+
+        Args:
+            spark: SparkSession object
+            feature_client: FeatureEngineeringClient instance
+            feature_table: Name of the feature table in Feature Store
+            output_table: Name of the label/output table
+            prediction_table: Name of the table to write predictions to
+            config: Dictionary containing ML configuration
+        """
 
         self.spark = spark
         self.feature_client = feature_client
@@ -32,7 +42,7 @@ class ChampionChallenger:
         logger.info("ChampionChallenger initialized")
 
     def get_test_data(self):
-
+        """Create a test dataset from the Feature Store and split it into X and y."""
         logger.info("Creating test dataset")
         target_column = self.config["ml"]["target"]["column"]
 
@@ -58,7 +68,11 @@ class ChampionChallenger:
         return X_test,y_test
 
     def load_encoder(self,run_id):
+        """Load the OneHotEncoder artifact from an MLflow run.
 
+        Args:
+            run_id: MLflow run ID containing the encoder artifact.
+        """
         logger.info("Loading encoder")
 
         encoder_path = mlflow.artifacts.download_artifacts(run_id=run_id,
@@ -70,7 +84,15 @@ class ChampionChallenger:
         return encoder
     
     def encode_test_data(self,X_test,encoder):
+        """One-hot encode the categorical columns of the test data.
 
+        Args:
+            X_test: Pandas DataFrame of test features.
+            encoder: Fitted OneHotEncoder instance.
+
+        Returns:
+            Pandas DataFrame with encoded categorical and numeric columns.
+        """
         category_columns = (self.config["ml"]["encoding"]["categorical_columns"])
         numeric_columns = (self.config["ml"]["encoding"]["numeric_columns"])
 
@@ -99,7 +121,16 @@ class ChampionChallenger:
         return X_test_final
     
     def evaluate_model(self,model_alias,X_test,y_test):
+        """Load and evaluate a model version by its MLflow alias.
 
+        Args:
+            model_alias: MLflow model alias (e.g. 'champion' or 'challenger').
+            X_test: Pandas DataFrame of test features.
+            y_test: Pandas Series of test labels.
+
+        Returns:
+            Dictionary with version, run_id, test_r2, and predictions.
+        """
         logger.info("Evaluating model using alias: %s",model_alias)
 
         model_details = (self.client.get_model_version_by_alias(self.model_name,model_alias))
@@ -128,7 +159,15 @@ class ChampionChallenger:
         }
     
     def compare_models(self,X_test,y_test):
+        """Compare challenger and champion models on R2 and promote if challenger wins.
 
+        Args:
+            X_test: Pandas DataFrame of test features.
+            y_test: Pandas Series of test labels.
+
+        Returns:
+            Dictionary with challenger version, R2 scores, and promotion status.
+        """
         logger.info("Starting Champion-Challenger comparison")
         challenger_alias = self.config["ml"]["registry"]["challenger_alias"]
         champion_alias = self.config["ml"]["registry"]["champion_alias"]
@@ -225,6 +264,14 @@ class ChampionChallenger:
             "metric_r2_passed": metric_r2_passed
         }
     def predict_with_champion_model(self, X_test):
+        """Generate predictions using the current champion model.
+
+        Args:
+            X_test: Pandas DataFrame of test features.
+
+        Returns:
+            Numpy array of predicted demand values.
+        """
         logger.info("Loading Champion model for final prediction")
         champion_alias = self.config["ml"]["registry"]["champion_alias"]
         champion_details = (self.client.get_model_version_by_alias(self.model_name,champion_alias))
@@ -255,6 +302,13 @@ class ChampionChallenger:
         return predictions
     
     def write_to_table(self,X_test,y_test,predictions):
+        """Write actual and predicted demand values to a Delta prediction table.
+
+        Args:
+            X_test: Pandas DataFrame of test features.
+            y_test: Pandas Series of actual demand values.
+            predictions: Numpy array of predicted demand values.
+        """
         logger.info(
             "Creating Champion prediction dataframe"
         )
@@ -284,7 +338,7 @@ class ChampionChallenger:
 
         logger.info("Champion predictions saved successfully")
     def run(self):
-
+        """Execute the full champion-challenger inference pipeline."""
         logger.info(
             "Champion-Challenger pipeline started"
         )

@@ -5,6 +5,14 @@ from pyspark.sql.window import Window
 class Features:
 
     def __init__(self, spark, catalog_name,gold_table,gold_feature):
+        """Initialize the Features instance.
+
+        Args:
+            spark: SparkSession object
+            catalog_name: Unity Catalog name
+            gold_table: Name of the source gold table
+            gold_feature: Name of the target gold feature table
+        """
         self.spark = spark
         self.catalog_name = catalog_name
         self.gold_table = gold_table
@@ -24,8 +32,9 @@ class Features:
             self.logger.addHandler(handler)
 
     def read_gold(self):
+        """Read the gold table from Unity Catalog and return it as a DataFrame."""
 
-        self.logger.info(f"Reading Gold table: {self.gold_table}")
+        self.logger.info("Reading Gold table: %s", self.gold_table)
         try:
             gold_df = self.spark.table(self.gold_table)
 
@@ -35,10 +44,18 @@ class Features:
 
         except Exception as e:
 
-            self.logger.error(f"Failed to read Gold table: {str(e)}")
+            self.logger.error("Failed to read Gold table: %s", str(e))
             raise
             
     def create_features(self, gold_df):
+        """Engineer lag, rolling average, and calendar features from the gold table.
+
+        Args:
+            gold_df: Spark DataFrame containing gold-level aggregated data.
+
+        Returns:
+            DataFrame with demand_1, demand_7, rolling_7_day_avg, month, and day_of_week columns.
+        """
 
         self.logger.info("Starting feature engineering")
         w = (Window.partitionBy(
@@ -107,8 +124,9 @@ class Features:
 
 
     def create_feature_table(self, feature_df):
+        """Write the feature DataFrame as a Delta table to Unity Catalog."""
         self.logger.info(
-            f"Writing feature table: {self.gold_feature}"
+            "Writing feature table: %s", self.gold_feature
         )
 
         try:
@@ -121,17 +139,18 @@ class Features:
             )
 
             self.logger.info(
-                f"Feature table created successfully: {self.gold_feature}"
+                "Feature table created successfully: %s", self.gold_feature
             )
 
             return True
 
         except Exception as e:
 
-            self.logger.error(f"Failed to create feature table: {str(e)}")
+            self.logger.error("Failed to create feature table: %s", str(e))
             raise 
 
     def run(self):
+        """Execute the full feature engineering pipeline."""
 
         self.logger.info(
             "========== Feature Engineering Started =========="
@@ -159,5 +178,5 @@ class Features:
             return True
 
         except Exception as e:
-            self.logger.error(f"Feature pipeline failed: {str(e)}")
+            self.logger.error("Feature pipeline failed: %s", str(e))
             raise

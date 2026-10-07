@@ -31,6 +31,15 @@ class ModelSelection:
         output_table,
         config
     ):
+        """Initialize the ModelSelection instance.
+
+        Args:
+            spark: SparkSession object
+            feature_client: FeatureEngineeringClient instance
+            feature_table: Name of the feature table in Feature Store
+            output_table: Name of the label/output table
+            config: Dictionary containing ML configuration
+        """
         self.spark = spark
         self.feature_client = feature_client
         self.feature_table = feature_table
@@ -43,6 +52,11 @@ class ModelSelection:
         logger.info("Model Selection initialized")
 
     def get_best_run(self):
+        """Search MLflow for the best completed run based on validation R2.
+
+        Returns:
+            Pandas Series containing the best run's metadata and metrics.
+        """
         logger.info(
             "Searching for best model based on validation R2"
         )
@@ -53,7 +67,7 @@ class ModelSelection:
 
         if experiment is None:
             raise ValueError(
-                f"Experiment not found: {self.config["ml"]["experiment_name"]}"
+                f"Experiment not found: {self.config['ml']['experiment_name']}"
             )
         selection_metric = self.config["ml"]["mlflow"]["selection_metric"]
         run_name = self.config["ml"]["mlflow"]["run_name"]
@@ -87,7 +101,7 @@ class ModelSelection:
         return best_run
 
     def create_training_dataset(self):
-
+        """Create a training dataset by joining the output table with Feature Store features."""
         logger.info("Fetching dataset from Feature Store")
         target_column = self.config["ml"]["target"]["column"]
         training_set = self.feature_client.create_training_set(
@@ -111,7 +125,7 @@ class ModelSelection:
         return df
 
     def get_test_data(self):
-
+        """Create a test dataset from the Feature Store and split it into X and y."""
         logger.info("Creating test dataset")
         target_column = self.config["ml"]["target"]["column"]
 
@@ -163,7 +177,14 @@ class ModelSelection:
         return X_test, y_test
 
     def load_model(self, run_id):
+        """Load a candidate model from an MLflow run.
 
+        Args:
+            run_id: MLflow run ID of the model to load.
+
+        Returns:
+            Loaded sklearn model instance.
+        """
         logger.info(
             "Loading candidate model from MLflow run"
         )
@@ -188,7 +209,14 @@ class ModelSelection:
         return model
 
     def load_encoder(self, run_id):
+        """Load the OneHotEncoder artifact from an MLflow run.
 
+        Args:
+            run_id: MLflow run ID containing the encoder artifact.
+
+        Returns:
+            Loaded OneHotEncoder instance.
+        """
         logger.info(
             "Loading encoder from MLflow run"
         )
@@ -208,7 +236,15 @@ class ModelSelection:
         return encoder
 
     def encode_test_data(self, X_test, encoder):
+        """One-hot encode the categorical columns of the test data.
 
+        Args:
+            X_test: Pandas DataFrame of test features.
+            encoder: Fitted OneHotEncoder instance.
+
+        Returns:
+            Pandas DataFrame with encoded categorical and numeric columns.
+        """
         logger.info("Encoding test data")
 
         category_columns = (self.config["ml"]["encoding"]["categorical_columns"])
@@ -246,7 +282,16 @@ class ModelSelection:
         return X_test_final
 
     def test_model(self, X_test, y_test, run_id):
+        """Load and test a candidate model on the test dataset.
 
+        Args:
+            X_test: Pandas DataFrame of test features.
+            y_test: Pandas Series of test labels.
+            run_id: MLflow run ID of the model to test.
+
+        Returns:
+            R2 score of the model on the test data.
+        """
         logger.info(
             "Testing candidate model"
         )
@@ -271,7 +316,15 @@ class ModelSelection:
         return test_r2
 
     def register_model(self, run_id, test_r2):
+        """Register the model in Unity Catalog if it passes the R2 threshold.
 
+        Args:
+            run_id: MLflow run ID of the model to register.
+            test_r2: R2 score achieved on the test dataset.
+
+        Returns:
+            True if the model was registered, False otherwise.
+        """
         threshold = self.config["ml"]["validation"]["test_r2_threshold"]
 
         if test_r2 <= threshold:
@@ -325,7 +378,11 @@ class ModelSelection:
         return True
 
     def assign_challenger(self, test_r2):
+        """Assign the Challenger alias to the registered model version.
 
+        Args:
+            test_r2: R2 score to tag on the model version.
+        """
         client = MlflowClient()
         challenger_alias = self.config["ml"]["registry"]["challenger_alias"]
         model_name = self.config["ml"]["model_name"]["registered_name"]
@@ -357,7 +414,7 @@ class ModelSelection:
         return True
 
     def run(self):
-
+        """Execute the full model selection, testing, and registration pipeline."""
         logger.info(
             "Model selection and testing pipeline started"
         )

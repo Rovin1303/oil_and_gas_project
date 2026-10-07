@@ -42,6 +42,7 @@ class FeatureStore:
         return df
     
     def convert_nulls(self,df):
+        """Replace null values in lag and rolling average columns with zero."""
         df = (df.withColumn("demand_1",F.coalesce(F.col("demand_1"),F.lit(0)))
             .withColumn("demand_7",F.coalesce(F.col("demand_7"),F.lit(0)))
             .withColumn("rolling_7_day_avg",F.coalesce(F.col("rolling_7_day_avg"),F.lit(0))))

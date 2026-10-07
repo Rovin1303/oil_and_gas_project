@@ -5,6 +5,14 @@ from pyspark.sql.window import Window
 class GoldTransformation:
 
     def __init__(self, spark, catalog_name,silver_table,gold_table):
+        """Initialize the GoldTransformation instance.
+
+        Args:
+            spark: SparkSession object
+            catalog_name: Unity Catalog name
+            silver_table: Name of the source silver table
+            gold_table: Name of the target gold table
+        """
         self.spark = spark
         self.catalog_name = catalog_name
         self.silver_table = silver_table
@@ -21,8 +29,9 @@ class GoldTransformation:
             self.logger.addHandler(handler)
 
     def read_silver(self):
+        """Read the silver table from Unity Catalog and return it as a DataFrame."""
         self.logger.info(
-            f"Reading Silver table: {self.silver_table}"
+            "Reading Silver table: %s", self.silver_table
         )
         try:
             silver_df = self.spark.table(self.silver_table)
@@ -32,11 +41,12 @@ class GoldTransformation:
             return silver_df
         except Exception as e:
             self.logger.error(
-                f"Failed to read Silver table: {str(e)}"
+                "Failed to read Silver table: %s", str(e)
             )
             raise
 
     def gold_table_df(self, silver_df):
+        """Aggregate silver data by date, product, and city into gold-level metrics."""
         self.logger.info(
             "Starting Gold table aggregation")
         try:
@@ -53,10 +63,11 @@ class GoldTransformation:
             self.logger.info("Gold table aggregation completed successfully")
             return df
         except Exception as e:
-            raise self.logger.error(f"Gold aggregation failed: {str(e)}")
+            raise self.logger.error("Gold aggregation failed: %s", str(e))
     
     def create_gold_table(self, df):
-        self.logger.info(f"Writing Gold table: {self.gold_table}")
+        """Write the aggregated gold DataFrame as a Delta table to Unity Catalog."""
+        self.logger.info("Writing Gold table: %s", self.gold_table)
         try:
             (
             df.write
@@ -65,14 +76,15 @@ class GoldTransformation:
             .saveAsTable(self.gold_table)
         )
             self.logger.info(
-                f"Gold table created successfully: {self.gold_table}"
+                "Gold table created successfully: %s", self.gold_table
             )
             return True
         except Exception as e:
-            self.logger.error(f"Failed to create Gold table: {str(e)}")
+            self.logger.error("Failed to create Gold table: %s", str(e))
             raise 
     
     def run(self):
+        """Execute the full gold transformation pipeline."""
         self.logger.info("========== Gold transformation started ==========")
         try:
             silver_df = self.read_silver()
@@ -81,4 +93,4 @@ class GoldTransformation:
             self.logger.info("========== Gold transformation completed successfully ==========")
             return True
         except Exception as e:
-            raise self.logger.error(f"Gold transformation failed: {str(e)}")
+            raise self.logger.error("Gold transformation failed: %s", str(e))
