@@ -31,7 +31,7 @@ class GoldTransformation:
     def read_silver(self):
         """Read the silver table from Unity Catalog and return it as a DataFrame."""
         self.logger.info(
-            f"Reading Silver table: {self.silver_table}"
+            "Reading Silver table: %s", self.silver_table
         )
         try:
             silver_df = self.spark.table(self.silver_table)
@@ -41,7 +41,7 @@ class GoldTransformation:
             return silver_df
         except Exception as e:
             self.logger.error(
-                f"Failed to read Silver table: {str(e)}"
+                "Failed to read Silver table: %s", str(e)
             )
             raise
 
@@ -63,11 +63,11 @@ class GoldTransformation:
             self.logger.info("Gold table aggregation completed successfully")
             return df
         except Exception as e:
-            raise self.logger.error(f"Gold aggregation failed: {str(e)}")
+            raise self.logger.error("Gold aggregation failed: %s", str(e))
     
     def create_gold_table(self, df):
         """Write the aggregated gold DataFrame as a Delta table to Unity Catalog."""
-        self.logger.info(f"Writing Gold table: {self.gold_table}")
+        self.logger.info("Writing Gold table: %s", self.gold_table)
         try:
             (
             df.write
@@ -76,11 +76,11 @@ class GoldTransformation:
             .saveAsTable(self.gold_table)
         )
             self.logger.info(
-                f"Gold table created successfully: {self.gold_table}"
+                "Gold table created successfully: %s", self.gold_table
             )
             return True
         except Exception as e:
-            self.logger.error(f"Failed to create Gold table: {str(e)}")
+            self.logger.error("Failed to create Gold table: %s", str(e))
             raise 
     
     def run(self):
@@ -93,4 +93,4 @@ class GoldTransformation:
             self.logger.info("========== Gold transformation completed successfully ==========")
             return True
         except Exception as e:
-            raise self.logger.error(f"Gold transformation failed: {str(e)}")
+            raise self.logger.error("Gold transformation failed: %s", str(e))

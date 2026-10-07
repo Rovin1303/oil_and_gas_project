@@ -34,7 +34,7 @@ class Features:
     def read_gold(self):
         """Read the gold table from Unity Catalog and return it as a DataFrame."""
 
-        self.logger.info(f"Reading Gold table: {self.gold_table}")
+        self.logger.info("Reading Gold table: %s", self.gold_table)
         try:
             gold_df = self.spark.table(self.gold_table)
 
@@ -44,7 +44,7 @@ class Features:
 
         except Exception as e:
 
-            self.logger.error(f"Failed to read Gold table: {str(e)}")
+            self.logger.error("Failed to read Gold table: %s", str(e))
             raise
             
     def create_features(self, gold_df):
@@ -126,7 +126,7 @@ class Features:
     def create_feature_table(self, feature_df):
         """Write the feature DataFrame as a Delta table to Unity Catalog."""
         self.logger.info(
-            f"Writing feature table: {self.gold_feature}"
+            "Writing feature table: %s", self.gold_feature
         )
 
         try:
@@ -139,14 +139,14 @@ class Features:
             )
 
             self.logger.info(
-                f"Feature table created successfully: {self.gold_feature}"
+                "Feature table created successfully: %s", self.gold_feature
             )
 
             return True
 
         except Exception as e:
 
-            self.logger.error(f"Failed to create feature table: {str(e)}")
+            self.logger.error("Failed to create feature table: %s", str(e))
             raise 
 
     def run(self):
@@ -178,5 +178,5 @@ class Features:
             return True
 
         except Exception as e:
-            self.logger.error(f"Feature pipeline failed: {str(e)}")
+            self.logger.error("Feature pipeline failed: %s", str(e))
             raise

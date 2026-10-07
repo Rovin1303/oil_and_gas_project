@@ -77,7 +77,7 @@ class BronzeIngestion:
     def create_dataframe(self):
         '''Read the source CSV file and create a Spark DataFrame with the bronze schema.'''
 
-        self.logger.info(f"Reading source file: {self.data_path}")
+        self.logger.info("Reading source file: %s", self.data_path)
         try:
             bronze_schema = self.define_schema()
             bronze_df = self.spark.read.csv(
@@ -96,16 +96,16 @@ class BronzeIngestion:
         except Exception as e:
 
             raise self.logger.error(
-                f"Failed to create DataFrame: {str(e)}"
+                "Failed to create DataFrame: %s", str(e)
             )
     
     def create_table(self):
         '''Create the bronze Delta table by reading the source file and writing to Unity Catalog.'''
-        self.logger.info(f"Starting Bronze table creation: {self.table_name}")
+        self.logger.info("Starting Bronze table creation: %s", self.table_name)
         try:
             bronze_df = self.create_dataframe()
             record_count = bronze_df.count()
-            self.logger.info(f"Records read from source: {record_count}")
+            self.logger.info("Records read from source: %s", record_count)
             (
                 bronze_df.write
                 .format("delta")
@@ -113,11 +113,11 @@ class BronzeIngestion:
                 .saveAsTable(self.table_name)
             )
 
-            self.logger.info(f"Bronze table created successfully: {self.table_name}")
+            self.logger.info("Bronze table created successfully: %s", self.table_name)
             return True
         except Exception as e:
             raise self.logger.error(
-                f"Bronze table creation failed: {str(e)}"
+                "Bronze table creation failed: %s", str(e)
             )
     
     def run(self):
