@@ -1,4 +1,5 @@
 import pandas as pd
+import pytest
 import sys
 
 def test_split_method(spark,model_training):
@@ -25,43 +26,35 @@ def test_split_method(spark,model_training):
     assert validate_df["transaction_id"].tolist() == [7,8]
     assert test_df["transaction_id"].tolist() == [9,10]
 
-def test_encode_categorical_data(model_training):
+def test_encode_categorical_data(encoding_model_training):
 
     X_train = pd.DataFrame({
-        "product_name": [
-            "Product_A",
-            "Product_B",
-            "Product_C",
-            "Product_A"
-        ],
-        "destination_city": [
-            "Mumbai",
-            "Delhi",
-            "Chennai",
-            "Mumbai"
-        ],
-        "ordered_quantity": [
-            100,
-            200,
-            150,
-            300
-        ],
-        "unit_price": [
-            10.0,
-            20.0,
-            15.0,
-            30.0
-        ],
+        "product_name": ["Product_A","Product_B","Product_C","Product_A"],
+        "destination_city": ["Mumbai","Delhi","Chennai","Mumbai"],
+        "ordered_quantity": [100,200,150,300],
+        "unit_price": [10.0,20.0,15.0,30.0],
     })
 
-    X_train_final, encoder = model_training.encode_categorical_data(X_train)
+    X_train_final, encoder = encoding_model_training.encode_categorical_data(X_train)
 
     assert len(X_train_final) == len(X_train)
-
     assert "product_name_Product_A" in X_train_final.columns
     assert "product_name_Product_B" in X_train_final.columns
     assert "product_name_Product_C" in X_train_final.columns
-
     assert "destination_city_Chennai" in X_train_final.columns
     assert "destination_city_Delhi" in X_train_final.columns
     assert "destination_city_Mumbai" in X_train_final.columns
+
+def test_invalid_column(encoding_model_training):
+
+    X_train = pd.DataFrame({
+        "product_name": ["Product_A", "Product_B"],
+        "destination_city": ["Mumbai", "Delhi"],
+        "ordered_quantity": [100, 200],
+        "unit_price": [10.0, 20.0]
+    })
+
+    encoding_model_training.config["ml"]["encoding"]["categorical_columns"] = ["invalid_column"]
+
+    with pytest.raises(KeyError):
+        encoding_model_training.encode_categorical_data(X_train)

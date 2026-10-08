@@ -2,7 +2,8 @@ pandas
 scikit-learn
 mlflow
 databricks-feature-engineering
-ruff
-mypy
-pytest
 pyspark
+mypy
+ruff
+pytest
+
