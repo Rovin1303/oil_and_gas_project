@@ -11,9 +11,6 @@ if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
 sys.modules["databricks.feature_engineering"] = MagicMock()
-
-
-# Import after mocking Databricks dependency
 from src.model_train.model_training import MLModelTraining
 
 
@@ -27,9 +24,20 @@ def spark():
     spark.stop()
 
 @pytest.fixture
-def model_training(tmp_path):
-    """Provide MLModelTraining instance for tests."""
+def model_training():
+    """Provide MLModelTraining instance for split_data tests."""
+    return MLModelTraining(
+        spark=None,
+        feature_client=None,
+        feature_table="dummy_feature_table",
+        output_table="dummy_output_table",
+        config={}
+    )
 
+
+@pytest.fixture
+def encoding_model_training(tmp_path):
+    """Provide MLModelTraining instance for encoding tests."""
     config = {
         "ml": {
             "encoding": {
