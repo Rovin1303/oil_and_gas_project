@@ -1,7 +1,6 @@
 import logging
 import os
 import pickle
-
 import mlflow
 import mlflow.sklearn
 import pandas as pd
@@ -24,7 +23,6 @@ if not logger.handlers:
 
     handler.setFormatter(formatter)
     logger.addHandler(handler)
-
 logger.propagate = False
 
 class MLModelTraining:
