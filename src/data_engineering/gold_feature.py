@@ -160,19 +160,9 @@ class Features:
 
         try:
 
-            # Step 1
             gold_df = self.read_gold()
-
-            # Step 2
-            feature_df = self.create_features(
-                gold_df
-            )
-
-            # Step 3
-            self.create_feature_table(
-                feature_df
-            )
-
+            feature_df = self.create_features(gold_df)
+            self.create_feature_table(feature_df)
             self.logger.info(
                 "========== Feature Engineering Completed Successfully =========="
             )

@@ -118,7 +118,6 @@ def feature_store(config):
 
     features_obj.run()
 
-
 def main():
     """Execute the full data engineering pipeline: bronze, silver, gold, features, and feature store."""
     config_path = "../../config/config.yml"

@@ -57,7 +57,6 @@ class ChampionChallenger:
         )
         df = training_set.load_df()
         df = df.orderBy("transaction_date")
-        df = df.drop("transaction_date")
         df = df.toPandas()
         train_validate_df,test_df = train_test_split(df,test_size=0.20,shuffle=False)
         _train_df,_validate_df = train_test_split(train_validate_df,test_size=0.20,shuffle=False)

@@ -24,7 +24,6 @@ if not logger.handlers:
 
     handler.setFormatter(formatter)
     logger.addHandler(handler)
-
 logger.propagate = False
 
 class MLModelTraining:

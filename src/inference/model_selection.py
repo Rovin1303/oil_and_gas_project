@@ -131,7 +131,6 @@ class ModelSelection:
         df = self.create_training_dataset()
 
         df = df.orderBy("transaction_date")
-        df = df.drop("transaction_date")
         df = df.toPandas()
 
         train_validate_df, test_df = train_test_split(
@@ -433,10 +432,7 @@ class ModelSelection:
             y_test,
             run_id
         )
-        registered = self.register_model(
-            run_id,
-            test_r2
-        )
+        registered = self.register_model(run_id,test_r2)
 
         if not registered:
 
@@ -447,9 +443,7 @@ class ModelSelection:
 
             return False
 
-        self.assign_challenger(
-            test_r2
-        )
+        self.assign_challenger(test_r2)
 
         logger.info(
             "Model selection and testing pipeline completed"
