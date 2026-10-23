@@ -26,9 +26,7 @@ class SilverTransformation:
     
     def read_bronze(self):
         '''Read the bronze table from Unity Catalog and return it as a DataFrame.'''
-        self.logger.info(
-            "Reading Bronze table: %s", self.bronze_table
-        )
+        self.logger.info("Reading Bronze table: %s", self.bronze_table)
         try:
             bronze_df = self.spark.table(self.bronze_table)
             self.logger.info(

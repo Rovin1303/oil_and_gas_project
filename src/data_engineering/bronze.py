@@ -41,7 +41,6 @@ class BronzeIngestion:
         '''Define the schema for the bronze layer supply chain data.'''
 
         self.logger.info("Defining Bronze schema")
-
         bronze_schema = StructType([
             StructField("transaction_id", StringType(), True),
             StructField("transaction_date", DateType(), True),

@@ -60,24 +60,12 @@ class Features:
         """
 
         self.logger.info("Starting feature engineering")
-        w = (Window.partitionBy(
-                    "product_name",
-                    "destination_city"
-                ).orderBy(
-                    "transaction_date"
-                ))
-
+        w = (Window.partitionBy("product_name","destination_city").orderBy("transaction_date"))
         rolling_w = (
                 Window
-                .partitionBy(
-                    "product_name",
-                    "destination_city"
-                )
-                .orderBy(
-                    "transaction_date"
-                )
-                .rowsBetween(-7, -1)
-            )
+                .partitionBy("product_name","destination_city")
+                .orderBy("transaction_date")
+                .rowsBetween(-7, -1))
 
         feature_df = (
             gold_df.withColumn(
