@@ -26,7 +26,7 @@ resources:
         on_failure:
           - rovindcosta133@gmail.com
         on_duration_warning_threshold_exceeded:
-          - "data-alerts@yourcompany.com"
+          - rovindcosta133@gmail.com
       tasks:
         - task_key: 1_data_engineering
           spark_python_task:
